@@ -40,7 +40,6 @@ int main(int argc, char **argv)
     printf("DEBUG: PCAP MAGIC NUM IS %x\n", pcap.magic_num);
     printf("DEBUG: PCAP VERSION NUMBER IS %u.%u\n", pcap.version_major, pcap.version_minor);
     printf("DEBUG: FILE LENGTH IS %ld\n", file_len);
-    EthHeader_t eth;
     IpHeader_t ip;
     UdpHeader_t udp;
 #endif
@@ -59,9 +58,9 @@ int main(int argc, char **argv)
 #endif
 #ifndef DEBUG
         /* If not a debug build, skip over un-needed headers */
-        fseek(fp, 42, SEEK_CUR);
+        /* TODO: handle ipv6 here */
 #endif
-#ifdef DEBUG
+        EthHeader_t eth;
         (void) fread(&eth, sizeof(eth), 1, fp);
         printf("DEBUG: ETH DEST HOST IS %.2x:%.2x:%.2x:%.2x:%.2x:%.2x\n",
                                                 eth.eth_dhost[0],
@@ -78,6 +77,18 @@ int main(int argc, char **argv)
                                                 eth.eth_shost[4],
                                                 eth.eth_shost[5]);
         printf("DEBUG: ETHERTYPE IS: 0x%.2x\n", eth.eth_type);
+
+        if (ntohs(eth.eth_type) == 0x0800) {
+            fseek(fp, 20, SEEK_CUR);
+        } else if (ntohs(eth.eth_type) == 0x86dd) {
+            fseek(fp, 40, SEEK_CUR);
+        } else {
+            fprintf(stderr, "Usupported EtherType Version\n");
+            goto cleanup;
+        }
+
+        fseek(fp, 8, SEEK_CUR);
+#ifdef DEBUG
 
         (void) fread(&ip, sizeof(ip), 1, fp);
         printf("DEBUG: IP VERSION/HL is 0x%x\n", ip.ip_vhl);
@@ -96,6 +107,7 @@ int main(int argc, char **argv)
             fprintf(stderr, "Usupported Psychic Capture version\n");
             goto cleanup;
         }
+
         printf("*** Packet %d ***\n", packet_num);
         printf("Version : %x\n", zh.zh_vt >> 4);
         /* This program only supports version 1 */
@@ -107,13 +119,13 @@ int main(int argc, char **argv)
         uint8_t type = zh.zh_vt & 0xFF;
         switch (type) {
             case 0x10 :
-                z_msg_parse(fp, &zh);
+                z_msg_parse(fp, &zh); //TODO: Remove this call; seek over the packet.
                 break;
             case 0x11 :
                 z_status_parse(fp, &zh);
                 break;
             case 0x12 :
-                z_cmd_parse(fp, &zh);
+                z_cmd_parse(fp, &zh); //TODO: Remove this call; seek over the packet.
                 break;
             case 0x13 :
                 z_gps_parse(fp, &zh);
