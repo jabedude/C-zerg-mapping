@@ -1,0 +1,10 @@
+bin/*
+!bin/.gitkeep
+obj/*
+!obj/.gitkeep
+*.swp
+*.o
+a.out
+test*
+*.su
+.gdb_history
