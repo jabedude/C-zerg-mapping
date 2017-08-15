@@ -55,9 +55,7 @@ This macro is a network to host endianness switcher for 3 byte values.
 #define COMP2(x) (~x) + 1
 
 /* Function prototypes */
-void z_msg_parse(FILE *fp, ZergHeader_t *zh);
 void z_status_parse(FILE *fp, ZergHeader_t *zh);
-void z_cmd_parse(FILE *fp, ZergHeader_t *zh);
 void z_gps_parse(FILE *fp, ZergHeader_t *zh);
 
 #endif

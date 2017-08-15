@@ -16,13 +16,6 @@ static const ZergData_t breeds[] = {
     {14, "Defiler"}, {15, "Devourer"},
 };
 
-static const ZergData_t cmds[] = {
-    {0, "GET_STATUS"}, {1, "GOTO"},
-    {2, "GET_GPS"}, {3, "NONE"},
-    {4, "RETURN"}, {5, "SET_GROUP"},
-    {6, "STOP"}, {7, "REPEAT"},
-};
-
 static double ieee_convert64(uint64_t num)
 {
     /* All credit to droberts */
@@ -62,38 +55,6 @@ static uint64_t ntoh64(uint64_t val)
     val = ((val << 8) & 0xFF00FF00FF00FF00ULL ) | ((val >> 8) & 0x00FF00FF00FF00FFULL );
     val = ((val << 16) & 0xFFFF0000FFFF0000ULL ) | ((val >> 16) & 0x0000FFFF0000FFFFULL );
     return (val << 32) | (val >> 32);
-}
-
-void z_msg_parse(FILE *fp, ZergHeader_t *zh)
-{
-    int len = 0;
-    char *msg;
-#ifdef DEBUG
-    printf("DEBUG: ZERG V 1 // TYPE 0\n");
-    printf("DEBUG: TOTAL LEN IS %.2x%.2x%.2x\n", zh->zh_len[0], zh->zh_len[1], zh->zh_len[2]);
-#endif
-    len = NTOH3(zh->zh_len);
-    len -= ZERG_SIZE;
-#ifdef DEBUG
-    printf("DEBUG: PAYLOAD IS %d\n", len);
-#endif
-
-    msg = (char *) malloc(sizeof(char) * len);
-    if (!msg) {
-        fprintf(stderr, "MALLOC ERROR!\n");
-    }
-    (void) fread(msg, sizeof(char), len, fp);
-#ifdef DEBUG
-    printf("DEBUG: MSG IS: ");
-#endif
-    printf("Message : ");
-    for (int i = 0; i < len; i++)
-        putchar(msg[i]);
-
-    putchar('\n');
-
-    free(msg);
-    return;
 }
 
 void z_status_parse(FILE *fp, ZergHeader_t *zh)
@@ -136,65 +97,6 @@ void z_status_parse(FILE *fp, ZergHeader_t *zh)
 
     putchar('\n');
 
-    return;
-}
-
-void z_cmd_parse(FILE *fp, ZergHeader_t *zh)
-{
-    int len = 0;
-    ZergCmdPayload_t zcp;
-
-    len = NTOH3(zh->zh_len);
-    len -= ZERG_SIZE;
-    if (len > 8) {
-        fprintf(stderr, "Corrupt command packet\n");
-        return;
-    }
-
-    (void) fread(&zcp, len, 1, fp);
-    if (ntohs(zcp.zcp_command) > 7) {
-        fprintf(stderr, "Unknown command type\n");
-        return;
-    }
-
-#ifdef DEBUG
-    printf("DEBUG: ZERG V 1 // TYPE 2\n");
-    printf("DEBUG: PAYLOAD IS %d\n", len);
-    printf("DEBUG: COMMAND IS %s\n", cmds[ntohs(zcp.zcp_command)].data);
-#endif
-
-    if (len == 2) {
-        /* No parameters passed */
-        printf("%s\n", cmds[ntohs(zcp.zcp_command)].data);
-    } else {
-        /* These commands have parameters */
-#ifdef DEBUG
-        printf("DEBUG: PARAM 1 IS: %d\n", ntohs(zcp.zcp_param_one));
-        printf("DEBUG: PARAM 2 IS: %d\n", ntohl(zcp.zcp_param_two));
-#endif
-        printf("%s\n", cmds[ntohs(zcp.zcp_command)].data);
-
-        switch (ntohs(zcp.zcp_command)) {
-            case 1 :
-                printf("Move %d m at bearing %6.4f\n", ntohs(zcp.zcp_param_one), ieee_convert32(ntohl(zcp.zcp_param_two)));
-                break;
-            case 3 :
-                break;
-            case 5 :
-                if (ntohs(zcp.zcp_param_one))
-                    printf("ADD to/from ");
-                else
-                    printf("Remove to/from ");
-                printf("group ID %d\n", COMP2((int32_t) zcp.zcp_param_two));
-                break;
-            case 7 :
-                printf("Re-send %d\n", ntohl(zcp.zcp_param_two));
-                break;
-            default :
-                fprintf(stderr, "Unknown command: %d\n", ntohs(zcp.zcp_command));
-                break;
-        }
-    }
     return;
 }
 

@@ -119,13 +119,13 @@ int main(int argc, char **argv)
         uint8_t type = zh.zh_vt & 0xFF;
         switch (type) {
             case 0x10 :
-                z_msg_parse(fp, &zh); //TODO: Remove this call; seek over the packet.
+                fseek(fp, (NTOH3(zh.zh_len)) - ZERG_SIZE, SEEK_CUR);
                 break;
             case 0x11 :
                 z_status_parse(fp, &zh);
                 break;
             case 0x12 :
-                z_cmd_parse(fp, &zh); //TODO: Remove this call; seek over the packet.
+                fseek(fp, (NTOH3(zh.zh_len)) - ZERG_SIZE, SEEK_CUR);
                 break;
             case 0x13 :
                 z_gps_parse(fp, &zh);
