@@ -37,6 +37,15 @@ typedef struct zerg_gps_payload {
     uint32_t zgp_acc;
 } ZergGpsPayload_t;
 
+typedef struct zerg_block {
+    uint16_t z_id;
+    uint8_t z_hp[3];
+    uint8_t z_maxhp[3];
+    uint64_t z_long;
+    uint64_t z_lat;
+    uint32_t z_alt;
+} ZergBlock_t;
+
 /* Macros */
 /*
 This macro is a network to host endianness switcher for 3 byte values.
