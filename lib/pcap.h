@@ -68,7 +68,4 @@ typedef struct zerg_header {
     uint32_t zh_seqid;
 } ZergHeader_t;
 
-/* Funtion Prototypes */
-void read_input(FILE *fp, FILE *pfp);
-
 #endif
