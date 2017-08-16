@@ -3,14 +3,14 @@ CFLAGS=-Wall -Wextra -Wpedantic -Wwrite-strings -Wstack-usage=1024 -Wfloat-equal
 
 all: decode
 
-decode: decode.c zerg.o
-	$(CC) $(CFLAGS) decode.c obj/zerg.o -o bin/$@ -lm
+decode: decode.c zerg.o tree.o
+	$(CC) $(CFLAGS) decode.c obj/tree.o obj/zerg.o -o bin/$@ -lm
 
 zerg.o: lib/zerg.c
 	$(CC) $(CFLAGS) $< -c -o obj/zerg.o -lm
 
-pcap.o: lib/pcap.c
-	$(CC) $(CFLAGS) $< -c -o obj/pcap.o -lm
+tree.o: lib/tree.c
+	$(CC) $(CFLAGS) $< -c -o obj/tree.o -lm
 
 debug: CFLAGS += -DDEBUG -g -fstack-usage
 debug: all
