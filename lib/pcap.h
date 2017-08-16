@@ -63,8 +63,8 @@ typedef struct udp_header {
 typedef struct zerg_header {
     uint8_t zh_vt;
     uint8_t zh_len[3];
-    uint16_t zh_src;
     uint16_t zh_dest;
+    uint16_t zh_src;
     uint32_t zh_seqid;
 } ZergHeader_t;
 
