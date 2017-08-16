@@ -3,18 +3,62 @@
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
+
+#include "zerg.h"
 #include "tree.h"
+
+static double ieee_convert64(uint64_t num)
+{
+    /* All credit to droberts */
+    uint8_t sign;
+    uint16_t exponent;
+    uint64_t mantisa;
+    double result = 0;
+
+    sign = num >> 63;
+    exponent = (num >> 52 & 0x7FF) - 1023;
+    mantisa = num & 0xFFFFFFFFFFFFF;
+    result = (mantisa *pow(2, -52)) + 1;
+    result *= pow(1, sign) * pow(2, exponent);
+    return result;
+}
+
+static double ieee_convert32(uint32_t num)
+{
+    /* All credit to droberts */
+    uint8_t sign, exponent;
+    uint32_t mantisa;
+    double result = 0;
+
+    sign = num >> 31;
+    exponent = (num >> 23 & 0xFF) - 127;
+    mantisa = num & 0x7FFFFF;
+
+    result = (mantisa *pow(2, -23)) + 1;
+    result *= pow(1, sign) * pow(2, exponent);
+
+    return result;
+}
+
+static uint64_t ntoh64(uint64_t val)
+{
+    /* https://stackoverflow.com/a/2637138/5155574 */
+    val = ((val << 8) & 0xFF00FF00FF00FF00ULL ) | ((val >> 8) & 0x00FF00FF00FF00FFULL );
+    val = ((val << 16) & 0xFFFF0000FFFF0000ULL ) | ((val >> 16) & 0x0000FFFF0000FFFFULL );
+    return (val << 32) | (val >> 32);
+}
 
 ZergBlock_t *mkblk(void)
 {
-    ZergBlock_t *zb = calloc(1, sizeof(ZergBlock_t));
+    ZergBlock_t *zb = malloc(sizeof(ZergBlock_t));
     return zb;
 }
 
 Node *mknode(void)
 {
     Node *n      = malloc(sizeof(Node));
-    n->zergblk   = mkblk();
+    n->zergblk   = NULL;
     n->left      = NULL;
     n->right     = NULL;
     return n;
@@ -62,35 +106,51 @@ Node *trtol(Node *root)
     return root;
 }
 
-void nadd(Node *root, Ticker *company)
+void nadd(Node *root, ZergBlock_t *zb)
 {
-    if (root->tick->price) { //Non-empty tree
+    if (root->zergblk) { //Non-empty tree
         Node *n = root;
         Node *m = root;
         while (n) {
             m = n;
-            if (strcasecmp(n->tick->symb, company->symb) < 0)
+            if (n->zergblk->z_id < zb->z_id)
                 n = n->right;
-            else if (strcasecmp(n->tick->symb, company->symb) > 0)
+            else if (n->zergblk->z_id > zb->z_id)
                 n = n->left;
-            else          //Already in BST
+            else {          //Already in BST
+                n->zergblk->z_hp[0] = zb->z_hp[0];
+                n->zergblk->z_hp[1] = zb->z_hp[1];
+                n->zergblk->z_hp[2] = zb->z_hp[2];
+                n->zergblk->z_long = zb->z_long;
+                n->zergblk->z_lat  = zb->z_lat;
+                n->zergblk->z_alt  = zb->z_alt;
+                free(zb);
                 return;
+            }
         }
         Node *tmp = mknode();
-        tmp->tick = company;
-        if (strcasecmp(m->tick->symb, company->symb) < 0)
+        tmp->zergblk = zb;
+        if (m->zergblk->z_id < zb->z_id)
             m->right = tmp;
-        else if (strcasecmp(m->tick->symb, company->symb) > 0)
+        else if (m->zergblk->z_id > zb->z_id)
             m->left = tmp;
     } else {            //Empty tree
-        root->tick = company;
+        root->zergblk = zb;
     }
 }
 
 void printnode(const Node *n)
 {
-    double tmp = (double) n->tick->price / 100;
-    printf("%s %.2lf %s\n", n->tick->symb, tmp, n->tick->name);
+    double longitude, latitude;
+    longitude = ieee_convert64(ntoh64(n->zergblk->z_long));
+    latitude = ieee_convert64(ntoh64(n->zergblk->z_lat));
+    printf("Source: %d\tHP: %d/%u\tLong: %6.4f deg\tLat: %6.4f\tAlt: %6.4f\n",
+           ntohs(n->zergblk->z_id),
+           NTOH3(n->zergblk->z_hp),
+           NTOH3(n->zergblk->z_maxhp),
+           longitude,
+           latitude,
+           ieee_convert32(ntohl(n->zergblk->z_alt)));
 }
 
 void listprint(Node *head)
@@ -105,7 +165,7 @@ void rmlist(Node *head)
 {
     if (head) {
         rmlist(head->right);
-        free(head->tick);
+        free(head->zergblk);
         free(head);
     }
 }
@@ -125,23 +185,26 @@ void rmtree(Node *root)
     if (root) {
         rmtree(root->left);
         rmtree(root->right);
-        free(root->tick);
+        printf("freeing node: %d\n", root->zergblk->z_id);
+        free(root->zergblk);
         free(root);
     }
 }
 
-int updtree(Node *root, Ticker *term)
+int updtree(Node *root, ZergBlock_t *zb)
 {
     Node *tmp = root;
     while (tmp) {
-        if (strcasecmp(tmp->tick->symb, term->symb) < 0)
+        if (tmp->zergblk->z_id < zb->z_id)
             tmp = tmp->right;
-        else if (strcasecmp(tmp->tick->symb, term->symb) > 0)
+        else if (tmp->zergblk->z_id > zb->z_id)
             tmp = tmp->left;
         else {
-            if ((tmp->tick->price + term->price < 1) || (tmp->tick->price + term->price > 1000000))
+            if (0)
                 return UPDATE_INV;
-            tmp->tick->price += term->price;
+            tmp->zergblk->z_hp[0] = zb->z_hp[0];
+            tmp->zergblk->z_hp[1] = zb->z_hp[1];
+            tmp->zergblk->z_hp[2] = zb->z_hp[2];
             return UPDATE_SUC;
         }
     }

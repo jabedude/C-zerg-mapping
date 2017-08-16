@@ -24,7 +24,7 @@ void rmlist(Node *head);
 Node *trtol(Node *root);
 void listprint(Node *head);
 void ordprint(Node *root);
-void nadd(Node *root, Ticker *company);
-int updtree(Node *root, Ticker *term);
+void nadd(Node *root, ZergBlock_t *zb);
+int updtree(Node *root, ZergBlock_t *zb);
 
 #endif

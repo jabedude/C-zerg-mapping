@@ -57,7 +57,7 @@ static uint64_t ntoh64(uint64_t val)
     return (val << 32) | (val >> 32);
 }
 
-void z_status_parse(FILE *fp, ZergHeader_t *zh)
+void z_status_parse(FILE *fp, ZergHeader_t *zh, ZergBlock_t *zb)
 {
     int len = 0;
     int hp = 0;
@@ -96,6 +96,15 @@ void z_status_parse(FILE *fp, ZergHeader_t *zh)
         putchar(name[i]);
 
     putchar('\n');
+
+    /* Fill ZergBlock here */
+    zb->z_id = zh->zh_src;
+    zb->z_hp[0] = zsp.zsp_hp[0];
+    zb->z_hp[1] = zsp.zsp_hp[1];
+    zb->z_hp[2] = zsp.zsp_hp[2];
+    zb->z_maxhp[0] = zsp.zsp_maxhp[0];
+    zb->z_maxhp[1] = zsp.zsp_maxhp[1];
+    zb->z_maxhp[2] = zsp.zsp_maxhp[2];
 
     return;
 }

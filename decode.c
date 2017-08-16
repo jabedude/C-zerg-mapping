@@ -1,8 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <arpa/inet.h>
 
 #include "lib/pcap.h"
 #include "lib/zerg.h"
+#include "lib/tree.h"
 
 int main(int argc, char **argv)
 {
@@ -35,31 +37,13 @@ int main(int argc, char **argv)
         fclose(fp);
         return 1;
     }
-#ifdef DEBUG
-    printf("DEBUG: This is a pcap.\n");
-    printf("DEBUG: PCAP MAGIC NUM IS %x\n", pcap.magic_num);
-    printf("DEBUG: PCAP VERSION NUMBER IS %u.%u\n", pcap.version_major, pcap.version_minor);
-    printf("DEBUG: FILE LENGTH IS %ld\n", file_len);
-    IpHeader_t ip;
-    UdpHeader_t udp;
-#endif
 
     packet_num = 1;
     /* Main decode loop */
+    Node *root = mknode();
     while (ftell(fp) < file_len) {
         (void) fread(&pcap_pack, sizeof(pcap_pack), 1, fp);
         packet_end = pcap_pack.recorded_len + ftell(fp);
-#ifdef DEBUG
-        printf("DEBUG: PACKET EPOCH IS %u\n", pcap_pack.epoch);
-        printf("DEBUG: PACKET DATA LENGTH IS %u\n", pcap_pack.recorded_len);
-        printf("DEBUG: PACKET LENGTH IS %u\n", pcap_pack.orig_len);
-        printf("DEBUG: PACKET DATA LENGTH IS %u\n", pcap_pack.recorded_len);
-        printf("DEBUG: PACKET END SHOULD BE %lu\n", packet_end);
-#endif
-#ifndef DEBUG
-        /* If not a debug build, skip over un-needed headers */
-        /* TODO: handle ipv6 here */
-#endif
         EthHeader_t eth;
         (void) fread(&eth, sizeof(eth), 1, fp);
         printf("DEBUG: ETH DEST HOST IS %.2x:%.2x:%.2x:%.2x:%.2x:%.2x\n",
@@ -88,19 +72,6 @@ int main(int argc, char **argv)
         }
 
         fseek(fp, 8, SEEK_CUR);
-#ifdef DEBUG
-
-        (void) fread(&ip, sizeof(ip), 1, fp);
-        printf("DEBUG: IP VERSION/HL is 0x%x\n", ip.ip_vhl);
-        printf("DEBUG: IP TOTAL LEN is %x\n", ip.ip_len);
-        char buf[INET_ADDRSTRLEN];
-        printf("DEBUG: SOURCE IP is %s\n", inet_ntop(AF_INET, &ip.ip_src, buf, INET_ADDRSTRLEN));
-        printf("DEBUG: DEST IP is %s\n", inet_ntop(AF_INET, &ip.ip_dst, buf, INET_ADDRSTRLEN));
-
-        (void) fread(&udp, sizeof(udp), 1, fp);
-        printf("DEBUG: UDP DEST PORT IS is 0x%x\n", ntohs(udp.uh_dport));
-        printf("DEBUG: UDP LENGTH IS is %u\n", ntohs(udp.uh_ulen));
-#endif
 
         (void) fread(&zh, sizeof(zh), 1, fp);
         if ((zh.zh_vt >> 4) != 1) {
@@ -116,32 +87,34 @@ int main(int argc, char **argv)
         printf("To : %d\n", ntohs(zh.zh_dest));
 
         /* Call type-specific decoder routines */
+        /* Make a temp ZergBlock and insert into tree*/
+        ZergBlock_t *zb = mkblk();
         uint8_t type = zh.zh_vt & 0xFF;
         switch (type) {
             case 0x10 :
                 fseek(fp, (NTOH3(zh.zh_len)) - ZERG_SIZE, SEEK_CUR);
                 break;
             case 0x11 :
-                z_status_parse(fp, &zh);
+                z_status_parse(fp, &zh, zb);
+                nadd(root, zb);
                 break;
             case 0x12 :
                 fseek(fp, (NTOH3(zh.zh_len)) - ZERG_SIZE, SEEK_CUR);
                 break;
             case 0x13 :
-                z_gps_parse(fp, &zh);
+                z_gps_parse(fp, &zh); //TODO: get GPS into zb here
                 break;
             default :
                 fprintf(stderr, "%s: error reading psychic capture.\n", argv[0]);
                 break;
         }
-#ifdef DEBUG
-        printf("DEBUG: FP IS AT %lu\n", ftell(fp));
-#endif
+
     cleanup:
         packet_num++;
         fseek(fp, packet_end, SEEK_SET);
 
     }
+    rmtree(root);
     fclose(fp);
     return 0;
 }

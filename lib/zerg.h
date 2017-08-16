@@ -22,12 +22,6 @@ typedef struct zerg_status_payload {
     uint32_t zsp_speed;
 } ZergStatPayload_t;
 
-typedef struct zerg_command_payload {
-    uint16_t zcp_command;
-    uint16_t zcp_param_one;
-    uint32_t zcp_param_two;
-} ZergCmdPayload_t;
-
 typedef struct zerg_gps_payload {
     uint64_t zgp_long;
     uint64_t zgp_lat;
@@ -55,7 +49,7 @@ This macro is a network to host endianness switcher for 3 byte values.
 #define COMP2(x) (~x) + 1
 
 /* Function prototypes */
-void z_status_parse(FILE *fp, ZergHeader_t *zh);
+void z_status_parse(FILE *fp, ZergHeader_t *zh, ZergBlock_t *zb);
 void z_gps_parse(FILE *fp, ZergHeader_t *zh);
 
 #endif
