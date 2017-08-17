@@ -5,6 +5,7 @@
 #include "zerg.h"
 #include "pcap.h"
 
+#ifdef DEBUG
 static const ZergData_t breeds[] = {
     {0, "Overmind"}, {1, "Larva"},
     {2, "Cerebrate"}, {3, "Overlord"},
@@ -15,6 +16,7 @@ static const ZergData_t breeds[] = {
     {12, "Ultralisk"}, {13, "Mutalisk"},
     {14, "Defiler"}, {15, "Devourer"},
 };
+#endif
 
 static double ieee_convert64(uint64_t num)
 {
@@ -60,31 +62,30 @@ static uint64_t ntoh64(uint64_t val)
 void z_status_parse(FILE *fp, ZergHeader_t *zh, ZergBlock_t *zb)
 {
     int len = 0;
-    int hp = 0;
-    unsigned int max_hp = 0;
-    char name[128];
     ZergStatPayload_t zsp;
 
     len = NTOH3(zh->zh_len);
     len -= ZERG_SIZE;
 #ifdef DEBUG
+    int hp = 0;
+    unsigned int max_hp = 0;
+    char name[128];
     printf("DEBUG: ZERG V 1 // TYPE 1\n");
     printf("DEBUG: PAYLOAD IS %d\n", len);
 #endif
 
     (void) fread(&zsp, sizeof(zsp), 1, fp);
-    hp = NTOH3(zsp.zsp_hp);
-    max_hp = NTOH3(zsp.zsp_maxhp);
     if (zsp.zsp_ztype > 15) {
         fprintf(stderr, "Unknown breed\n");
         return;
     }
 
 #ifdef DEBUG
+    hp = NTOH3(zsp.zsp_hp);
+    max_hp = NTOH3(zsp.zsp_maxhp);
     printf("DEBUG: HP IS: %d\n", hp);
     printf("DEBUG: ZERG TYPE IS: %d\n", zsp.zsp_ztype);
     printf("DEBUG: NAME LENGTH IS: %d\n", len - ZERG_STAT_LEN);
-#endif
     printf("HP : %d\n", hp);
     printf("Max-HP : %u\n", max_hp);
     printf("Type : %s\n", breeds[zsp.zsp_ztype].data);
@@ -96,6 +97,11 @@ void z_status_parse(FILE *fp, ZergHeader_t *zh, ZergBlock_t *zb)
         putchar(name[i]);
 
     putchar('\n');
+#endif
+
+#ifndef DEBUG
+    (void) fseek(fp, len - ZERG_STAT_LEN, SEEK_CUR);
+#endif
 
     /* Fill ZergBlock here */
     zb->z_id = zh->zh_src;
