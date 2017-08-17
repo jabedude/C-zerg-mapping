@@ -50,6 +50,6 @@ This macro is a network to host endianness switcher for 3 byte values.
 
 /* Function prototypes */
 void z_status_parse(FILE *fp, ZergHeader_t *zh, ZergBlock_t *zb);
-void z_gps_parse(FILE *fp, ZergHeader_t *zh);
+void z_gps_parse(FILE *fp, ZergHeader_t *zh, ZergBlock_t *zb);
 
 #endif

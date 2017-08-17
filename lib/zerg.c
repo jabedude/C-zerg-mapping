@@ -115,25 +115,26 @@ void z_status_parse(FILE *fp, ZergHeader_t *zh, ZergBlock_t *zb)
     return;
 }
 
-void z_gps_parse(FILE *fp, ZergHeader_t *zh)
+void z_gps_parse(FILE *fp, ZergHeader_t *zh, ZergBlock_t *zb)
 {
     int len = 0;
-    double longitude, latitude;
-    int degrees, minutes;
-    float seconds;
     ZergGpsPayload_t zgp;
 
     len = NTOH3(zh->zh_len);
     len -= ZERG_SIZE;
 #ifdef DEBUG
+    double longitude, latitude;
+    int degrees, minutes;
+    float seconds;
     printf("DEBUG ZERG V 1 // TYPE 3\n");
     printf("DEBUG: PAYLOAD IS %d\n", len);
 #endif
 
     (void) fread(&zgp, len, 1, fp);
+
+#ifdef DEBUG
     longitude = ieee_convert64(ntoh64(zgp.zgp_long));
     latitude = ieee_convert64(ntoh64(zgp.zgp_lat));
-
     printf("Longitude : %6.4f deg\n", longitude);
     degrees = (int) longitude;
     minutes = (int) ((longitude - degrees) * 60);
@@ -151,5 +152,12 @@ void z_gps_parse(FILE *fp, ZergHeader_t *zh)
     printf("Bearing : %6.4f deg\n", ieee_convert32(ntohl(zgp.zgp_bearing)));
     printf("Speed : %6.4f m/s\n", ieee_convert32(ntohl(zgp.zgp_speed)));
     printf("Accuracy : %6.4f m\n", ieee_convert32(ntohl(zgp.zgp_acc)));
+#endif
+
+    /* Fill ZergBlock here */
+    zb->z_long = zgp.zgp_long;
+    zb->z_lat = zgp.zgp_lat;
+    zb->z_alt = zgp.zgp_alt;
+
     return;
 }

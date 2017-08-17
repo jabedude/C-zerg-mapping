@@ -46,6 +46,7 @@ int main(int argc, char **argv)
         packet_end = pcap_pack.recorded_len + ftell(fp);
         EthHeader_t eth;
         (void) fread(&eth, sizeof(eth), 1, fp);
+#ifdef DEBUG
         printf("DEBUG: ETH DEST HOST IS %.2x:%.2x:%.2x:%.2x:%.2x:%.2x\n",
                                                 eth.eth_dhost[0],
                                                 eth.eth_dhost[1],
@@ -61,6 +62,7 @@ int main(int argc, char **argv)
                                                 eth.eth_shost[4],
                                                 eth.eth_shost[5]);
         printf("DEBUG: ETHERTYPE IS: 0x%.2x\n", eth.eth_type);
+#endif
 
         if (ntohs(eth.eth_type) == 0x0800) {
             fseek(fp, 20, SEEK_CUR);
@@ -79,12 +81,14 @@ int main(int argc, char **argv)
             goto cleanup;
         }
 
+#ifdef DEBUG
         printf("*** Packet %d ***\n", packet_num);
         printf("Version : %x\n", zh.zh_vt >> 4);
         /* This program only supports version 1 */
         printf("Sequence : %u\n", ntohl(zh.zh_seqid));
         printf("From : %d\n", ntohs(zh.zh_src));
         printf("To : %d\n", ntohs(zh.zh_dest));
+#endif
 
         /* Call type-specific decoder routines */
         /* Make a temp ZergBlock and insert into tree*/
@@ -102,7 +106,8 @@ int main(int argc, char **argv)
                 fseek(fp, (NTOH3(zh.zh_len)) - ZERG_SIZE, SEEK_CUR);
                 break;
             case 0x13 :
-                z_gps_parse(fp, &zh); //TODO: get GPS into zb here
+                z_gps_parse(fp, &zh, zb); //TODO: get GPS into zb here; memleak HERE
+                nadd(root, zb);
                 break;
             default :
                 fprintf(stderr, "%s: error reading psychic capture.\n", argv[0]);
