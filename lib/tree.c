@@ -185,7 +185,7 @@ void rmtree(Node *root)
     if (root) {
         rmtree(root->left);
         rmtree(root->right);
-        printf("freeing node: %d\n", root->zergblk->z_id);
+        //printf("freeing node: %d\n", root->zergblk->z_id);
         free(root->zergblk);
         free(root);
     }
