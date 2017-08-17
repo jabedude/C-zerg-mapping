@@ -26,5 +26,6 @@ void listprint(Node *head);
 void ordprint(Node *root);
 void nadd(Node *root, ZergBlock_t *zb);
 int updtree(Node *root, ZergBlock_t *zb);
+//TODO: create nodec(); returns number of nodes in tree
 
 #endif
