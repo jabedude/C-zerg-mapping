@@ -119,6 +119,7 @@ int main(int argc, char **argv)
         fseek(fp, packet_end, SEEK_SET);
 
     }
+    ordprint(root);
     rmtree(root);
     fclose(fp);
     return 0;
