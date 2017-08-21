@@ -155,6 +155,7 @@ void z_gps_parse(FILE *fp, ZergHeader_t *zh, ZergBlock_t *zb)
 #endif
 
     /* Fill ZergBlock here */
+    zb->z_id = zh->zh_src;
     zb->z_long = zgp.zgp_long;
     zb->z_lat = zgp.zgp_lat;
     zb->z_alt = zgp.zgp_alt;
