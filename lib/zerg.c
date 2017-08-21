@@ -18,47 +18,6 @@ static const ZergData_t breeds[] = {
 };
 #endif
 
-static double ieee_convert64(uint64_t num)
-{
-    /* All credit to droberts */
-    uint8_t sign;
-    uint16_t exponent;
-    uint64_t mantisa;
-    double result = 0;
-
-    sign = num >> 63;
-    exponent = (num >> 52 & 0x7FF) - 1023;
-    mantisa = num & 0xFFFFFFFFFFFFF;
-    result = (mantisa *pow(2, -52)) + 1;
-    result *= pow(1, sign) * pow(2, exponent);
-    return result;
-}
-
-static double ieee_convert32(uint32_t num)
-{
-    /* All credit to droberts */
-    uint8_t sign, exponent;
-    uint32_t mantisa;
-    double result = 0;
-
-    sign = num >> 31;
-    exponent = (num >> 23 & 0xFF) - 127;
-    mantisa = num & 0x7FFFFF;
-
-    result = (mantisa *pow(2, -23)) + 1;
-    result *= pow(1, sign) * pow(2, exponent);
-
-    return result;
-}
-
-static uint64_t ntoh64(uint64_t val)
-{
-    /* https://stackoverflow.com/a/2637138/5155574 */
-    val = ((val << 8) & 0xFF00FF00FF00FF00ULL ) | ((val >> 8) & 0x00FF00FF00FF00FFULL );
-    val = ((val << 16) & 0xFFFF0000FFFF0000ULL ) | ((val >> 16) & 0x0000FFFF0000FFFFULL );
-    return (val << 32) | (val >> 32);
-}
-
 void z_status_parse(FILE *fp, ZergHeader_t *zh, ZergBlock_t *zb)
 {
     int len = 0;

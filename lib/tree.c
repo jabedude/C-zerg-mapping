@@ -8,42 +8,6 @@
 #include "zerg.h"
 #include "tree.h"
 
-static double ieee_convert64(uint64_t num)
-{
-    /* All credit to droberts */
-    uint8_t sign;
-    uint16_t exponent;
-    uint64_t mantisa;
-    double result = 0;
-
-    if (num == 0)
-        return 0L;
-
-    sign = num >> 63;
-    exponent = (num >> 52 & 0x7FF) - 1023;
-    mantisa = num & 0xFFFFFFFFFFFFF;
-    result = (mantisa *pow(2, -52)) + 1;
-    result *= pow(1, sign) * pow(2, exponent);
-    return result;
-}
-
-static double ieee_convert32(uint32_t num)
-{
-    /* All credit to droberts */
-    uint8_t sign, exponent;
-    uint32_t mantisa;
-    double result = 0;
-
-    sign = num >> 31;
-    exponent = (num >> 23 & 0xFF) - 127;
-    mantisa = num & 0x7FFFFF;
-
-    result = (mantisa *pow(2, -23)) + 1;
-    result *= pow(1, sign) * pow(2, exponent);
-
-    return result;
-}
-
 static uint64_t ntoh64(uint64_t val)
 {
     /* https://stackoverflow.com/a/2637138/5155574 */

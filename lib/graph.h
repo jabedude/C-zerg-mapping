@@ -13,5 +13,6 @@ typedef struct _graph {
 Graph_t *mkgraph(int vertices);
 void rmgraph(Graph_t *g);
 void initgraph(Graph_t *g);
+double havdist(ZergBlock_t *zba, ZergBlock_t *zbb);
 
 #endif
