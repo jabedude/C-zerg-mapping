@@ -16,6 +16,9 @@ static double ieee_convert64(uint64_t num)
     uint64_t mantisa;
     double result = 0;
 
+    if (num == 0)
+        return 0L;
+
     sign = num >> 63;
     exponent = (num >> 52 & 0x7FF) - 1023;
     mantisa = num & 0xFFFFFFFFFFFFF;
@@ -47,6 +50,16 @@ static uint64_t ntoh64(uint64_t val)
     val = ((val << 8) & 0xFF00FF00FF00FF00ULL ) | ((val >> 8) & 0x00FF00FF00FF00FFULL );
     val = ((val << 16) & 0xFFFF0000FFFF0000ULL ) | ((val >> 16) & 0x0000FFFF0000FFFFULL );
     return (val << 32) | (val >> 32);
+}
+
+static double bin64(uint64_t num)
+{
+    union {
+        uint64_t dec;
+        double flt;
+    } u_f;
+    u_f.dec = ntoh64(num);
+    return u_f.flt;
 }
 
 ZergBlock_t *mkblk(void)
@@ -142,9 +155,12 @@ void nadd(Node *root, ZergBlock_t *zb)
 void printnode(const Node *n)
 {
     double longitude, latitude;
-    longitude = ieee_convert64(ntoh64(n->zergblk->z_long));
-    latitude = ieee_convert64(ntoh64(n->zergblk->z_lat));
-    printf("Source: %d\tHP: %d/%u\tLong: %6.4f deg\tLat: %6.4f\tAlt: %6.4f\n",
+
+    //longitude = ieee_convert64(ntoh64(n->zergblk->z_long));
+    longitude = bin64(n->zergblk->z_long);
+    //latitude = ieee_convert64(ntoh64(n->zergblk->z_lat));
+    latitude = bin64(n->zergblk->z_lat);
+    printf("Source: %d\tHP: %d/%u\tLong: %f deg\tLat: %f\tAlt: %6.4f\n",
            ntohs(n->zergblk->z_id),
            NTOH3(n->zergblk->z_hp),
            NTOH3(n->zergblk->z_maxhp),
