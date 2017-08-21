@@ -62,6 +62,16 @@ static double bin64(uint64_t num)
     return u_f.flt;
 }
 
+static double bin32(uint32_t num)
+{
+    union {
+        uint32_t dec;
+        double flt;
+    } u_f;
+    u_f.dec = ntohl(num);
+    return u_f.flt;
+}
+
 ZergBlock_t *mkblk(void)
 {
     ZergBlock_t *zb = malloc(sizeof(ZergBlock_t));
@@ -166,7 +176,7 @@ void printnode(const Node *n)
            NTOH3(n->zergblk->z_maxhp),
            longitude,
            latitude,
-           ieee_convert32(ntohl(n->zergblk->z_alt)));
+           bin32(n->zergblk->z_alt));
 }
 
 void listprint(Node *head)
