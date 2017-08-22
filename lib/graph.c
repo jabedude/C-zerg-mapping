@@ -52,7 +52,11 @@ void initgraph(Graph_t *g, Node *root)
     Node **nod_list = malloc(nodecount(root) * sizeof(Node*));
 
     _arr_frm_tr(root, nod_list);
-
+    for (size_t i = 0; i < nodecount(root); i++)
+    for (size_t j = 0; j < nodecount(root); j++)
+        printf("UNIT %d is %f far from UNIT %d\n", nod_list[i]->zergblk->z_id,
+                                                   havdist(nod_list[i]->zergblk, nod_list[j]->zergblk),
+                                                   nod_list[j]->zergblk->z_id);
 
     return;
 }
