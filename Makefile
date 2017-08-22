@@ -3,8 +3,8 @@ CFLAGS=-Wall -Wextra -Wpedantic -Wwrite-strings -Wstack-usage=1024 -Wfloat-equal
 
 all: decode
 
-decode: decode.c zerg.o tree.o
-	$(CC) $(CFLAGS) decode.c obj/tree.o obj/zerg.o -o bin/$@ -lm
+decode: decode.c zerg.o tree.o graph.o
+	$(CC) $(CFLAGS) obj/zerg.o obj/tree.o obj/graph.o decode.c -o bin/$@ -lm
 
 zerg.o: lib/zerg.c
 	$(CC) $(CFLAGS) $< -c -o obj/zerg.o -lm
@@ -12,7 +12,10 @@ zerg.o: lib/zerg.c
 tree.o: lib/tree.c
 	$(CC) $(CFLAGS) $< -c -o obj/tree.o -lm
 
-debug: CFLAGS += -DDEBUG -g -fstack-usage
+graph.o: lib/graph.c
+	$(CC) $(CFLAGS) $< -c -o obj/graph.o -lm
+
+debug: CFLAGS += -g -fstack-usage
 debug: all
 
 clean:

@@ -5,6 +5,7 @@
 #include "lib/pcap.h"
 #include "lib/zerg.h"
 #include "lib/tree.h"
+#include "lib/graph.h"
 
 int main(int argc, char **argv)
 {
@@ -123,6 +124,15 @@ int main(int argc, char **argv)
         fseek(fp, packet_end, SEEK_SET);
 
     }
+    unsigned int node_c = nodecount(root);
+    printf("Node count is %u\n", node_c);
+    if (node_c > 1) { // http://www.geeksforgeeks.org/construct-ancestor-matrix-from-a-given-binary-tree/
+        Graph_t *graph = mkgraph(node_c);
+        initgraph(graph, root);
+
+        //rmgraph(graph); //TODO: FREE() GRAPH
+    }
+
     ordprint(root);
     rmtree(root);
     fclose(fp);

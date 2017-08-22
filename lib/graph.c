@@ -1,7 +1,7 @@
 #include <math.h>
 
+#include "tree.h"
 #include "graph.h"
-#include "zerg.h"
 
 static double dist(double th1, double ph1, double th2, double ph2)
 {   /* https://rosettacode.org/wiki/Haversine_formula#C */
@@ -17,25 +17,41 @@ static double dist(double th1, double ph1, double th2, double ph2)
     return asin(sqrt(dx * dx + dy * dy + dz * dz) / 2) * 2 * R;
 }
 
-Graph_t *mkgraph(int vertices)
+static void _arr_frm_tr(const Node *root, Node **nod_list)
+{
+    static unsigned int ind = 0;
+
+    if (root) {
+        _arr_frm_tr(root->left, nod_list);
+        nod_list[ind++] = (Node *) root;
+        _arr_frm_tr(root->right, nod_list);
+    }
+    return;
+}
+
+Graph_t *mkgraph(unsigned int vertices)
 {
     Graph_t *g = malloc(sizeof(Graph_t));
     g->verts = vertices;
     g->mat = malloc(vertices * sizeof(int*));
 
-    for (int i = 0; i < vertices; i++)
+    for (unsigned int i = 0; i < vertices; i++)
         g->mat[i] = malloc(vertices * sizeof(int));
 
     return g;
 }
 
-void initgraph(Graph_t *g)
+void initgraph(Graph_t *g, Node *root)
 {
     for (int i = 0; i < g->verts; i++)
         for (int j = 0; j < g->verts; j++)
             g->mat[i][j] = 0;
-    //TODO: determine adjacency here
 
+    //TODO: determine adjacency here. http://www.geeksforgeeks.org/construct-ancestor-matrix-from-a-given-binary-tree/
+
+    Node **nod_list = malloc(nodecount(root) * sizeof(Node*));
+
+    _arr_frm_tr(root, nod_list);
 
 
     return;

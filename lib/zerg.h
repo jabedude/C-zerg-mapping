@@ -1,6 +1,7 @@
 #ifndef ZERG_HEADER
 #define ZERG_HEADER
 
+#include <stdio.h>
 #include "pcap.h"
 
 /* Definitions */
