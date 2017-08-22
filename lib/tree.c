@@ -42,6 +42,15 @@ ZergBlock_t *mkblk(void)
     return zb;
 }
 
+size_t nodecount(const Node *root)
+{
+    if (root == NULL)
+        return 0;
+    else {
+        return 1 + nodecount(root->left) + nodecount(root->right);
+    }
+}
+
 Node *mknode(void)
 {
     Node *n      = malloc(sizeof(Node));

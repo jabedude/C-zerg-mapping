@@ -18,6 +18,7 @@ typedef struct node {
 /*********FUNCTIONS*********/
 ZergBlock_t *mkblk(void); //TODO: look into macro-ing or inlining this
 Node *mknode(void);
+size_t nodecount(const Node *root);
 void printnode(const Node *n);
 void rmtree(Node *root);
 void rmlist(Node *head);
