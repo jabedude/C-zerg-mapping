@@ -1,0 +1,72 @@
+!zerg
+	version: 1
+	type: gps
+	from: 101
+	to: 1
+	sequence: 109
+	latitude: 0.0 deg. N
+	longitude: 0.0002 deg. W
+	altitude: 0.0m
+	bearing: 47.833333334 deg.
+	speed: 100km/h
+	accuracy: 5m
+!zerg
+	version: 1
+	type: gps
+	from: 102
+	to: 2
+	sequence: 109
+	latitude: 0.0 deg. N
+	longitude: 0.0001 deg. W
+	altitude: 0.0m
+	bearing: 47.833333334 deg.
+	speed: 100km/h
+	accuracy: 5m
+!zerg
+	version: 1
+	type: gps
+	from: 103
+	to: 3
+	sequence: 109
+	latitude: 0.0 deg. N
+	longitude: 0.00008 deg. W
+	altitude: 0.0m
+	bearing: 47.833333334 deg.
+	speed: 100km/h
+	accuracy: 5m
+!zerg
+	version: 1
+	type: gps
+	from: 104
+	to: 4
+	sequence: 109
+	latitude: 0.0 deg. N
+	longitude: 0.00003 deg. W
+	altitude: 0.0m
+	bearing: 47.833333334 deg.
+	speed: 100km/h
+	accuracy: 5m
+!zerg
+	version: 1
+	type: gps
+	from: 105
+	to: 5
+	sequence: 109
+	latitude: 0.0 deg. N
+	longitude: 0.00007 deg. W
+	altitude: 0.0m
+	bearing: 47.833333334 deg.
+	speed: 100km/h
+	accuracy: 5m
+!zerg
+	version: 1
+	type: gps
+	from: 106
+	to: 6
+	sequence: 109
+	latitude: 0.0 deg. N
+	longitude: 0.00024 deg. W
+	altitude: 0.0m
+	bearing: 47.833333334 deg.
+	speed: 100km/h
+	accuracy: 5m
