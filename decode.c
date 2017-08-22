@@ -44,8 +44,9 @@ int main(int argc, char **argv)
     while (ftell(fp) < file_len) {
         (void) fread(&pcap_pack, sizeof(pcap_pack), 1, fp);
         packet_end = pcap_pack.recorded_len + ftell(fp);
-        EthHeader_t eth;
-        (void) fread(&eth, sizeof(eth), 1, fp);
+        //EthHeader_t eth;
+        //(void) fread(&eth, sizeof(eth), 1, fp);
+        fseek(fp, sizeof(EthHeader_t), SEEK_CUR);
 #ifdef DEBUG
         printf("DEBUG: ETH DEST HOST IS %.2x:%.2x:%.2x:%.2x:%.2x:%.2x\n",
                                                 eth.eth_dhost[0],
@@ -64,12 +65,15 @@ int main(int argc, char **argv)
         printf("DEBUG: ETHERTYPE IS: 0x%.2x\n", eth.eth_type);
 #endif
 
-        if (ntohs(eth.eth_type) == 0x0800) {
+        IpHeader_t ip;
+        fread(&ip, sizeof(IpHeader_t), 1, fp);
+
+        if ((ip.ip_vhl >> 4) == 4) {
+            ; // PASS
+        } else if ((ip.ip_vhl >> 4) == 6) {
             fseek(fp, 20, SEEK_CUR);
-        } else if (ntohs(eth.eth_type) == 0x86dd) {
-            fseek(fp, 40, SEEK_CUR);
         } else {
-            fprintf(stderr, "Usupported EtherType Version\n");
+            fprintf(stderr, "Usupported IP Version\n");
             goto cleanup;
         }
 
