@@ -3,18 +3,66 @@
 #include "tree.h"
 #include "graph.h"
 
-static double dist(double th1, double ph1, double th2, double ph2)
-{   /* https://rosettacode.org/wiki/Haversine_formula#C */
-#define R 6371
-#define TO_RAD (3.1415926536 / 180)
-    double dx, dy, dz;
-    ph1 -= ph2;
-    ph1 *= TO_RAD, th1 *= TO_RAD, th2 *= TO_RAD;
+static uint64_t ntoh64(uint64_t val)
+{
+    /* https://stackoverflow.com/a/2637138/5155574 */
+    val = ((val << 8) & 0xFF00FF00FF00FF00ULL ) | ((val >> 8) & 0x00FF00FF00FF00FFULL );
+    val = ((val << 16) & 0xFFFF0000FFFF0000ULL ) | ((val >> 16) & 0x0000FFFF0000FFFFULL );
+    return (val << 32) | (val >> 32);
+}
 
-    dz = sin(th1) - sin(th2);
-    dx = cos(ph1) * cos(th1) - cos(th2);
-    dy = sin(ph1) * cos(th1);
-    return asin(sqrt(dx * dx + dy * dy + dz * dz) / 2) * 2 * R;
+static double bin64(uint64_t num)
+{
+    union {
+        uint64_t dec;
+        double flt;
+    } u_f;
+    u_f.dec = ntoh64(num);
+    return u_f.flt;
+}
+
+static double bin32(uint32_t num)
+{
+    union {
+        uint32_t dec;
+        double flt;
+    } u_f;
+    u_f.dec = ntohl(num);
+    return u_f.flt;
+}
+
+static double dist(ZergBlock_t *zba, ZergBlock_t *zbb)
+{
+    double lat1 = bin64(zba->z_lat);
+    double lon1 = bin64(zba->z_long);
+    double alt1 = bin32(zba->z_alt);
+    double lat2 = bin64(zbb->z_lat);
+    double lon2 = bin64(zbb->z_long);
+    double alt2 = bin32(zbb->z_alt);
+    //the average circumference of earth; great circle radius
+    const double r = 6372.8;
+
+    //PI in radians
+    const double PIByRad = 3.141592 / 180;
+
+    double dlog = PIByRad * ((lon2 - lon1) / 2);
+    double dlat = PIByRad * ((lat2 - lat1) / 2);
+
+    lon1 *= PIByRad;
+    lon2 *= PIByRad;
+    lat1 *= PIByRad;
+    lat2 *= PIByRad;
+
+    //Identity sin(x)^2 = 0.5 * (1 - cos(2x))
+    double a = 0.5 * (1 - cos(2 * dlat));
+    double b = cos(lat1) * cos(lat2);
+    double c = 0.5 * (1 - cos(2 * dlog));
+
+    double linearD = 2 * r * asin(sqrt(a + b * c));
+
+    double heightD = (alt1 - alt2) / 1000;
+
+    return 1000 * sqrt(linearD * linearD + heightD * heightD);
 }
 
 static void _arr_frm_tr(const Node *root, Node **nod_list)
@@ -55,39 +103,13 @@ void initgraph(Graph_t *g, Node *root)
     for (size_t i = 0; i < nodecount(root); i++)
     for (size_t j = 0; j < nodecount(root); j++)
         printf("UNIT %d is %f far from UNIT %d\n", nod_list[i]->zergblk->z_id,
+                                                   dist(nod_list[i]->zergblk, nod_list[j]->zergblk),
+                                                   nod_list[j]->zergblk->z_id);
+#if 0
+        printf("UNIT %d is %f far from UNIT %d\n", nod_list[i]->zergblk->z_id,
                                                    havdist(nod_list[i]->zergblk, nod_list[j]->zergblk),
                                                    nod_list[j]->zergblk->z_id);
+#endif
 
     return;
-}
-
-double havdist(ZergBlock_t *zba, ZergBlock_t *zbb)
-{
-    //double long1 = zerg1->longitude;
-    //double lat1 = zerg1->latitude;
-    //double alt1 = zerg1->altitude;
-
-    //double long2 = zerg2->longitude;
-    //double lat2 = zerg2->latitude;
-    //double alt2 = zerg2->altitude;
-
-    // TODO: refactor this stuff
-
-    double dlog = TO_RAD * ((zbb->z_long - zba->z_long) / 2);
-    double dlat = TO_RAD * ((zbb->z_lat - zba->z_lat) / 2);
-
-    double lon_a = TO_RAD * zba->z_long;
-    double lon_b = TO_RAD * zbb->z_long;
-    double lat_a = TO_RAD * zba->z_lat;
-    double lat_b = TO_RAD * zbb->z_lat;
-
-    double A = 0.5 * (1 - cos(2 * dlat));
-    double B = cos(lat_a) * cos(lat_b);
-    double C = 0.5 * (1 - cos(2 * dlog));
-
-    double linearD = 2 * R * asin(sqrt(A + B * C));
-
-    double heightD = (zba->z_alt - zbb->z_alt) / 1000;
-
-    return 1000 * sqrt(linearD * linearD + heightD * heightD);
 }
