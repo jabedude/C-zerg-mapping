@@ -39,6 +39,11 @@ int main(int argc, char **argv)
         }
     }
 
+    if (!(argc - optind)) {
+        fprintf(stderr, "Usage: %s <pcap file>\n", argv[0]);
+        return 1;
+    }
+
     /* Process files one by one */
     Node *root = mknode();
     unsigned int node_c = 0;
