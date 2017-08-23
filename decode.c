@@ -25,7 +25,6 @@ int main(int argc, char **argv)
     ZergHeader_t zh;
 
     int opt = 0;
-    bool h_flg = 0;
     int h_val = 10;
 
     /* get command line args */
