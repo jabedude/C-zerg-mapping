@@ -28,6 +28,9 @@ static double bin64(uint64_t num)
 
 static double bin32(uint32_t num)
 {
+    if (num == 0)
+        return num;
+
     union {
         uint32_t dec;
         double flt;
