@@ -101,15 +101,10 @@ void initgraph(Graph_t *g, Node *root)
 
     _arr_frm_tr(root, nod_list);
     for (size_t i = 0; i < nodecount(root); i++)
-    for (size_t j = 0; j < nodecount(root); j++)
+    for (size_t j = 0; j < nodecount(root); j++) {
         printf("UNIT %d is %f far from UNIT %d\n", nod_list[i]->zergblk->z_id,
                                                    dist(nod_list[i]->zergblk, nod_list[j]->zergblk),
                                                    nod_list[j]->zergblk->z_id);
-#if 0
-        printf("UNIT %d is %f far from UNIT %d\n", nod_list[i]->zergblk->z_id,
-                                                   havdist(nod_list[i]->zergblk, nod_list[j]->zergblk),
-                                                   nod_list[j]->zergblk->z_id);
-#endif
-
+    }
     return;
 }
