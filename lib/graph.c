@@ -81,10 +81,10 @@ Graph_t *mkgraph(unsigned int vertices)
 {
     Graph_t *g = malloc(sizeof(Graph_t));
     g->verts = vertices;
-    g->mat = malloc(vertices * sizeof(int*));
+    g->mat = malloc(vertices * sizeof(double*));
 
     for (unsigned int i = 0; i < vertices; i++)
-        g->mat[i] = malloc(vertices * sizeof(int));
+        g->mat[i] = malloc(vertices * sizeof(double));
 
     return g;
 }

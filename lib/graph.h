@@ -11,7 +11,7 @@
 typedef struct _graph {
     int verts;
     int edge;
-    int **mat; //2-d matrix
+    double **mat; //2-d matrix
 } Graph_t;
 
 Graph_t *mkgraph(unsigned int vertices);
