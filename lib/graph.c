@@ -77,6 +77,16 @@ static void _arr_frm_tr(const Node *root, Node **nod_list)
     return;
 }
 
+void printgraph(const Graph_t *g)
+{
+    for (int i = 0; i < g->verts; i++) {
+        for (int j = 0; j < g->verts; j++) {
+            printf("%.2f\t", g->mat[i][j]);
+        }
+        putchar('\n');
+    }
+}
+
 Graph_t *mkgraph(unsigned int vertices)
 {
     Graph_t *g = malloc(sizeof(Graph_t));
@@ -105,6 +115,7 @@ void initgraph(Graph_t *g, Node *root)
         printf("UNIT %d is %f far from UNIT %d\n", nod_list[i]->zergblk->z_id,
                                                    dist(nod_list[i]->zergblk, nod_list[j]->zergblk),
                                                    nod_list[j]->zergblk->z_id);
+        g->mat[i][j] = dist(nod_list[i]->zergblk, nod_list[j]->zergblk);
     }
     return;
 }

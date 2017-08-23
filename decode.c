@@ -125,6 +125,7 @@ int main(int argc, char **argv)
         Graph_t *graph = mkgraph(node_c);
         initgraph(graph, root);
 
+        printgraph(graph);
         //rmgraph(graph); //TODO: FREE() GRAPH
     }
 
