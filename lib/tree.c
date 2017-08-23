@@ -39,6 +39,7 @@ static double bin32(uint32_t num)
 ZergBlock_t *mkblk(void)
 {
     ZergBlock_t *zb = malloc(sizeof(ZergBlock_t));
+    memset(zb, 0, sizeof(ZergBlock_t));
     return zb;
 }
 

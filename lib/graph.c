@@ -77,6 +77,16 @@ static void _arr_frm_tr(const Node *root, Node **nod_list)
     return;
 }
 
+void rmgraph(Graph_t *g)
+{
+    for (int i = 0; i < g->verts; i++) {
+        double *dptr = g->mat[i];
+        free(dptr);
+    }
+
+    free(g);
+}
+
 void printgraph(const Graph_t *g)
 {
     for (int i = 0; i < g->verts; i++) {

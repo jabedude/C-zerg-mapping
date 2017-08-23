@@ -126,7 +126,7 @@ int main(int argc, char **argv)
         initgraph(graph, root);
 
         printgraph(graph);
-        //rmgraph(graph); //TODO: FREE() GRAPH
+        rmgraph(graph); //TODO: FREE() GRAPH
     }
 
     ordprint(root);
