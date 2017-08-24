@@ -100,6 +100,7 @@ void printgraph(const Graph_t *g)
 Graph_t *mkgraph(unsigned int vertices)
 {
     Graph_t *g = malloc(sizeof(Graph_t));
+    g->edges = 0;
     g->verts = vertices;
     g->mat = malloc(vertices * sizeof(double*));
 
@@ -111,6 +112,8 @@ Graph_t *mkgraph(unsigned int vertices)
 
 void initgraph(Graph_t *g, Node *root)
 {
+#define MIN_DIST 1.25000 * 0.91440
+#define MAX_DIST 15.00000
     for (int i = 0; i < g->verts; i++)
         for (int j = 0; j < g->verts; j++)
             g->mat[i][j] = 0;
@@ -126,6 +129,9 @@ void initgraph(Graph_t *g, Node *root)
                                                    dist(nod_list[i]->zergblk, nod_list[j]->zergblk),
                                                    ntohs(nod_list[j]->zergblk->z_id));
         g->mat[i][j] = dist(nod_list[i]->zergblk, nod_list[j]->zergblk);
+
+        if ((g->mat[i][j] < MAX_DIST) && (g->mat[i][j] > MIN_DIST))
+            ++(g->edges);
     }
     free(nod_list);
     return;
