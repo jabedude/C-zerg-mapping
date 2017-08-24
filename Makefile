@@ -1,9 +1,9 @@
 CC=gcc
 CFLAGS=-Wall -Wextra -Wpedantic -Wwrite-strings -Wstack-usage=1024 -Wfloat-equal -Waggregate-return -Winline
 
-all: decode
+all: zergmap
 
-decode: decode.c zerg.o tree.o graph.o
+zergmap: decode.c zerg.o tree.o graph.o
 	$(CC) $(CFLAGS) obj/zerg.o obj/tree.o obj/graph.o decode.c -o bin/$@ -lm
 
 zerg.o: lib/zerg.c
