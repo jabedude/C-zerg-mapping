@@ -19,6 +19,6 @@ Graph_t *mkgraph(unsigned int vertices);
 void rmgraph(Graph_t *g);
 void initgraph(Graph_t *g, Node *root);
 void printgraph(const Graph_t *g);
-bool isconn(Graph_t *g);
+bool isconn(const Graph_t *g);
 
 #endif

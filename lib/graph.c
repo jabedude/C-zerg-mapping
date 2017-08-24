@@ -110,6 +110,11 @@ Graph_t *mkgraph(unsigned int vertices)
     return g;
 }
 
+bool isconn(const Graph_t *g)
+{
+    return g->edges >= (g->verts * 2);
+}
+
 void initgraph(Graph_t *g, Node *root)
 {
 #define MIN_DIST 1.25000 * 0.91440

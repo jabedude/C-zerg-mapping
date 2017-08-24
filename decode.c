@@ -132,6 +132,10 @@ int main(int argc, char **argv)
 
         printgraph(graph);
         printf("GRAPH HAS %d EDGES.\n", graph->edges);
+        if (isconn(graph))
+            puts("GRAPH IS CONNECTED");
+        else
+            puts("GRAPH IS NOT CONNECTED");
         rmgraph(graph); //TODO: FREE() GRAPH
     }
 
