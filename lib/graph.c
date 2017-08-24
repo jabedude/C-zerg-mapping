@@ -83,7 +83,7 @@ void rmgraph(Graph_t *g)
         double *dptr = g->mat[i];
         free(dptr);
     }
-
+    free(g->mat);
     free(g);
 }
 
@@ -127,5 +127,6 @@ void initgraph(Graph_t *g, Node *root)
                                                    nod_list[j]->zergblk->z_id);
         g->mat[i][j] = dist(nod_list[i]->zergblk, nod_list[j]->zergblk);
     }
+    free(nod_list);
     return;
 }
