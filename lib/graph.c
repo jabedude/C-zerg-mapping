@@ -84,6 +84,7 @@ void rmgraph(Graph_t *g)
         free(dptr);
     }
     free(g->mat);
+    free(g->nod_list);
     free(g);
 }
 
@@ -101,7 +102,9 @@ Graph_t *mkgraph(unsigned int vertices)
 {
     Graph_t *g = malloc(sizeof(Graph_t));
     g->edges = 0;
+    g->max_rems = vertices;
     g->verts = vertices;
+    g->nod_list = malloc(vertices * sizeof(Node*));
     g->mat = malloc(vertices * sizeof(double*));
 
     for (unsigned int i = 0; i < vertices; i++)
@@ -115,29 +118,73 @@ bool isconn(const Graph_t *g)
     return g->edges >= (g->verts * 2);
 }
 
+void rmvert(Graph_t *g, int ind)
+{
+    static int v_dels = 0;
+
+    /* Remove item */
+    for (int i = ind; i < g->verts - 1; i++) {
+        g->nod_list[i] = g->nod_list[i+1];
+        g->mat[i] = g->mat[i+1];
+    }
+    --(g->verts);
+    ++v_dels;
+
+    for (int i = 0; i < g->verts; i++)
+    for (int j = 0; j < g->verts; j++) {
+        g->mat[i][j] = dist(g->nod_list[i]->zergblk, g->nod_list[j]->zergblk);
+    }
+
+    if (v_dels > (g->max_rems) / 2.0) { //Not going to remove more than half of the graph
+        fprintf(stderr, "Removed more than half of zerg units\n");
+        rmgraph(g);
+        exit(1);
+    }
+}
+
+void fixgraph(Graph_t *g)
+{
+    /* Neighbor count for each vertex */
+    for (int i = 0; i < g->verts; i++) {
+        int n_coun = 0;
+        for (int j = 0; j < g->verts; j++) {
+            if ((g->mat[i][j] < MAX_DIST) && (g->mat[i][j] > MIN_DIST))
+                ++n_coun;
+        }
+        if (n_coun < 2) { //vertex has too few neighbors. bye bye!
+            printf("DEBUG: REMOVING ZERG %d at IND %d\n", ntohs(g->nod_list[i]->zergblk->z_id), i);
+            rmvert(g, i);
+        }
+    }
+}
+
 void initgraph(Graph_t *g, Node *root)
 {
-#define MIN_DIST 1.25000 * 0.91440
-#define MAX_DIST 15.00000
     for (int i = 0; i < g->verts; i++)
-        for (int j = 0; j < g->verts; j++)
+    for (int j = 0; j < g->verts; j++)
             g->mat[i][j] = 0;
 
-    //TODO: determine adjacency here. http://www.geeksforgeeks.org/construct-ancestor-matrix-from-a-given-binary-tree/
 
-    Node **nod_list = malloc(nodecount(root) * sizeof(Node*));
+    //Node **nod_list = malloc(nodecount(root) * sizeof(Node*));
 
-    _arr_frm_tr(root, nod_list);
+    _arr_frm_tr(root, g->nod_list);
     for (size_t i = 0; i < nodecount(root); i++)
     for (size_t j = 0; j < nodecount(root); j++) {
-        printf("UNIT %d is %f far from UNIT %d\n", ntohs(nod_list[i]->zergblk->z_id),
-                                                   dist(nod_list[i]->zergblk, nod_list[j]->zergblk),
-                                                   ntohs(nod_list[j]->zergblk->z_id));
-        g->mat[i][j] = dist(nod_list[i]->zergblk, nod_list[j]->zergblk);
+        printf("UNIT %d is %f far from UNIT %d\n", ntohs(g->nod_list[i]->zergblk->z_id),
+                                                   dist(g->nod_list[i]->zergblk, g->nod_list[j]->zergblk),
+                                                   ntohs(g->nod_list[j]->zergblk->z_id));
+        g->mat[i][j] = dist(g->nod_list[i]->zergblk, g->nod_list[j]->zergblk);
 
+        //TODO: determine adjacency here. http://www.geeksforgeeks.org/construct-ancestor-matrix-from-a-given-binary-tree/
         if ((g->mat[i][j] < MAX_DIST) && (g->mat[i][j] > MIN_DIST))
             ++(g->edges);
     }
-    free(nod_list);
+    //free(nod_list);
     return;
 }
+
+/*
+1. neighbor count
+2. reachability test via sets
+
+*/

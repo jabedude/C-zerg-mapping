@@ -132,10 +132,16 @@ int main(int argc, char **argv)
 
         printgraph(graph);
         printf("GRAPH HAS %d EDGES.\n", graph->edges);
-        if (isconn(graph))
-            puts("GRAPH IS CONNECTED");
-        else
+
+        if (isconn(graph)) {
+            puts("ALL ZERG IN POSITION");
+            fixgraph(graph);
+        } else {
             puts("GRAPH IS NOT CONNECTED");
+            fixgraph(graph);
+        }
+
+        printgraph(graph);
         rmgraph(graph); //TODO: FREE() GRAPH
     }
 
