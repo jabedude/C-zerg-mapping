@@ -131,6 +131,7 @@ int main(int argc, char **argv)
         initgraph(graph, root);
 
         printgraph(graph);
+        printf("GRAPH HAS %d EDGES.\n", graph->edges);
         rmgraph(graph); //TODO: FREE() GRAPH
     }
 
