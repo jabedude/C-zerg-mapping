@@ -1,8 +1,6 @@
 CC=gcc
 CFLAGS=-Wall -Wextra -Wpedantic -Wwrite-strings -Wstack-usage=1024 -Wfloat-equal -Waggregate-return -Winline
 
-all: zergmap
-
 zergmap: decode.c zerg.o tree.o graph.o
 	$(CC) $(CFLAGS) obj/zerg.o obj/tree.o obj/graph.o decode.c -o bin/$@ -lm
 
@@ -16,7 +14,10 @@ graph.o: lib/graph.c
 	$(CC) $(CFLAGS) $< -c -o obj/graph.o -lm
 
 debug: CFLAGS += -g -fstack-usage
-debug: all
+debug: zergmap
+
+profile: CFLAGS += -pg
+profile: zergmap
 
 clean:
 	rm -f bin/* obj/* *.su
