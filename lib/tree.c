@@ -1,11 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-#include <ctype.h>
-#include <math.h>
-
-#include "zerg.h"
 #include "tree.h"
 
 static uint64_t ntoh64(uint64_t val)
