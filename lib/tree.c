@@ -131,11 +131,11 @@ Node *trtol(Node *root)
  */
 void nadd(Node *root, ZergBlock_t *zb)
 {
-#define MAX_ALT 7 * 0.0011364
+#define MAX_FATHOMS 7 * 880
     /* Check for valid lat/long values */
     double longitude = bin64(zb->z_long);
     double latitude = bin64(zb->z_lat);
-    if ((abs(longitude) > 180) || (abs(latitude) > 90) || (abs(bin32(zb->z_alt)) > MAX_ALT)) {
+    if ((abs(longitude) > 180) || (abs(latitude) > 90) || (abs(bin32(zb->z_alt)) > MAX_FATHOMS)) {
         fprintf(stderr, "Bad GPS value!\n");
         free(zb);
         return;
