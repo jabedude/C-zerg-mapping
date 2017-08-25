@@ -58,6 +58,7 @@ int main(int argc, char **argv)
         file_len = ftell(fp);
         rewind(fp);
 
+        /* Read pcap file header and test the "magic bytes" */
         (void) fread(&pcap, sizeof(pcap), 1, fp);
         if (pcap.magic_num != 0xa1b2c3d4) {
             fprintf(stderr, "Please supply a valid pcap file.\n");

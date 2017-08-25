@@ -8,6 +8,7 @@ void z_status_parse(FILE *fp, ZergHeader_t *zh, ZergBlock_t *zb)
     len = NTOH3(zh->zh_len);
     len -= ZERG_SIZE;
 
+    /* Read bytes into ZergHeader_t structure */
     (void) fread(&zsp, sizeof(zsp), 1, fp);
     if (zsp.zsp_ztype > 15) {
         fprintf(stderr, "Unknown breed\n");
@@ -36,6 +37,7 @@ void z_gps_parse(FILE *fp, ZergHeader_t *zh, ZergBlock_t *zb)
     len = NTOH3(zh->zh_len);
     len -= ZERG_SIZE;
 
+    /* Fill ZergHeader structure */
     (void) fread(&zgp, len, 1, fp);
 
     /* Fill ZergBlock here */

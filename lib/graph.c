@@ -1,5 +1,9 @@
 #include "graph.h"
 
+/*
+ * This is the implementation file for the Graph ADT used by the program.
+ */
+
 static uint64_t ntoh64(uint64_t val)
 {
     /* https://stackoverflow.com/a/2637138/5155574 */

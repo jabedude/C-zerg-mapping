@@ -1,5 +1,19 @@
+/*
+ * This is the implementation file for the Binary Search Tree used
+ * by the zergmap program.
+ */
+
 #include "tree.h"
 
+/*
+ * function: ntoh64
+ * change the byte-order of a 64-bit integer from network
+ * to host order.
+ *
+ * val: the integer to be swapped
+ *
+ * return: a host byte-order integer.
+ */
 static uint64_t ntoh64(uint64_t val)
 {
     /* https://stackoverflow.com/a/2637138/5155574 */
@@ -8,6 +22,14 @@ static uint64_t ntoh64(uint64_t val)
     return (val << 32) | (val >> 32);
 }
 
+/*
+ * function: bin64
+ * convert a 64-bit IEEE encoded number to a double
+ *
+ * num: the integer to be converted
+ *
+ * return: a C double
+ */
 static double bin64(uint64_t num)
 {
     union {
@@ -18,6 +40,14 @@ static double bin64(uint64_t num)
     return u_f.flt;
 }
 
+/*
+ * function: bin32
+ * convert a 32-bit IEEE encoded number to a double
+ *
+ * num: the integer to be converted
+ *
+ * return: a C double
+ */
 static double bin32(uint32_t num)
 {
     if (num == 0)
@@ -31,6 +61,14 @@ static double bin32(uint32_t num)
     return u_f.flt;
 }
 
+/*
+ * function: _ntoh3
+ * change the byte-order of a three byte array.
+ *
+ * x: pointer to the first byte to be swapped.
+ *
+ * return: a host byte-order integer.
+ */
 static int _ntoh3(uint8_t* x)
 {
     int y =((int) x[0] << 16) | ((int) (x[1]) << 8) | ((int) (x[2]));
