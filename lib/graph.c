@@ -166,9 +166,6 @@ void initgraph(Graph_t *g, Node *root)
     for (int j = 0; j < g->verts; j++)
             g->mat[i][j] = 0;
 
-
-    //Node **nod_list = malloc(nodecount(root) * sizeof(Node*));
-
     _arr_frm_tr(root, g->nod_list);
     for (size_t i = 0; i < nodecount(root); i++)
     for (size_t j = 0; j < nodecount(root); j++) {
@@ -176,7 +173,6 @@ void initgraph(Graph_t *g, Node *root)
         if ((g->mat[i][j] < MAX_DIST) && (g->mat[i][j] > MIN_DIST))
             ++(g->edges);
     }
-    //free(nod_list);
     return;
 }
 

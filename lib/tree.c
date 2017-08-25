@@ -100,7 +100,6 @@ static Node *trtolhelp(Node *root)
 
 Node *trtol(Node *root)
 {
-    /* http://www.geeksforgeeks.org/in-place-convert-a-given-binary-tree-to-doubly-linked-list/ */
     if (root == NULL)
         return root;
 
@@ -159,9 +158,7 @@ void printnode(const Node *n)
 {
     double longitude, latitude;
 
-    //longitude = ieee_convert64(ntoh64(n->zergblk->z_long));
     longitude = bin64(n->zergblk->z_long);
-    //latitude = ieee_convert64(ntoh64(n->zergblk->z_lat));
     latitude = bin64(n->zergblk->z_lat);
     printf("Source: %d\tHP: %d/%u\tLong: %f deg\tLat: %f\tAlt: %6.4f\n",
            ntohs(n->zergblk->z_id),
@@ -220,7 +217,6 @@ void rmtree(Node *root)
     if (root) {
         rmtree(root->left);
         rmtree(root->right);
-        //printf("freeing node: %d\n", root->zergblk->z_id);
         free(root->zergblk);
         free(root);
     }

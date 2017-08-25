@@ -70,8 +70,6 @@ int main(int argc, char **argv)
         while (ftell(fp) < file_len) {
             (void) fread(&pcap_pack, sizeof(pcap_pack), 1, fp);
             packet_end = pcap_pack.recorded_len + ftell(fp);
-            //EthHeader_t eth;
-            //(void) fread(&eth, sizeof(eth), 1, fp);
             fseek(fp, sizeof(EthHeader_t), SEEK_CUR);
             IpHeader_t ip;
             fread(&ip, sizeof(IpHeader_t), 1, fp);
@@ -129,7 +127,6 @@ int main(int argc, char **argv)
         Graph_t *graph = mkgraph(node_c);
         initgraph(graph, root);
 
-        //printgraph(graph);
         printf("GRAPH HAS %d EDGES.\n", graph->edges);
 
         if (isconn(graph)) {
@@ -140,13 +137,11 @@ int main(int argc, char **argv)
             fixgraph(graph);
         }
 
-        //printgraph(graph);
         rmgraph(graph);
     }
 
     printf("Low Health Zerg Units (Below %.0f%%):\n", h_val);
     printhealth(root, h_val);
-    //ordprint(root);
     rmtree(root);
     return 0;
 }
