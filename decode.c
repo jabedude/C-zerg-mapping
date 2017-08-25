@@ -75,8 +75,10 @@ int main(int argc, char **argv)
             fread(&ip, sizeof(IpHeader_t), 1, fp);
 
             if ((ip.ip_vhl >> 4) == 4) {
-                ; // PASS
+                /* Do nothing, since we have read the correct number of bytes */
+                ;
             } else if ((ip.ip_vhl >> 4) == 6) {
+                /* Seek the rest of the IPv6 header */
                 fseek(fp, 20, SEEK_CUR);
             } else {
                 fprintf(stderr, "Usupported IP Version\n");
@@ -86,6 +88,7 @@ int main(int argc, char **argv)
             fseek(fp, 8, SEEK_CUR);
 
             (void) fread(&zh, sizeof(zh), 1, fp);
+            /* Test the Zerg Version */
             if ((zh.zh_vt >> 4) != 1) {
                 fprintf(stderr, "Usupported Psychic Capture version\n");
                 goto cleanup;

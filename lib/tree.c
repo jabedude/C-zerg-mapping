@@ -196,7 +196,14 @@ void ordprint(Node *root)
     return;
 }
 
-void printhealth(const Node *root, double hp)
+/*
+ * function: printhealth
+ * display nodes with low health.
+ *
+ * root: root of BST to search through.
+ * hp: percentage threshold below which nodes will be displayed.
+ */
+void printhealth(const Node *root, const double hp)
 {
     if (root) {
         printhealth(root->left, hp);
@@ -212,6 +219,12 @@ void printhealth(const Node *root, double hp)
     }
 }
 
+/*
+ * function: rmtree
+ * recursively deallocate memory used by a specifed BST.
+ *
+ * root: root of BST to deallocate
+ */
 void rmtree(Node *root)
 {
     if (root) {

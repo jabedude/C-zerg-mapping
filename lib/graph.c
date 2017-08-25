@@ -34,16 +34,18 @@ static double bin32(uint32_t num)
 
 static double dist(ZergBlock_t *zba, ZergBlock_t *zbb)
 {
+    /* Found solution on github to calculate Haversines Distance
+     * https://github.com/jeremy-ryan/zergmap/blob/master/zergmap.c */
     double lat1 = bin64(zba->z_lat);
     double lon1 = bin64(zba->z_long);
     double alt1 = bin32(zba->z_alt);
     double lat2 = bin64(zbb->z_lat);
     double lon2 = bin64(zbb->z_long);
     double alt2 = bin32(zbb->z_alt);
-    //the average circumference of earth; great circle radius
+    /* using the average circumference of earth for radius */
     const double r = 6372.8;
 
-    //PI in radians
+    /* pi in rads */
     const double PIByRad = 3.141592 / 180;
 
     double dlog = PIByRad * ((lon2 - lon1) / 2);
@@ -54,7 +56,6 @@ static double dist(ZergBlock_t *zba, ZergBlock_t *zbb)
     lat1 *= PIByRad;
     lat2 *= PIByRad;
 
-    //Identity sin(x)^2 = 0.5 * (1 - cos(2x))
     double a = 0.5 * (1 - cos(2 * dlat));
     double b = cos(lat1) * cos(lat2);
     double c = 0.5 * (1 - cos(2 * dlog));
@@ -78,6 +79,12 @@ static void _arr_frm_tr(const Node *root, Node **nod_list)
     return;
 }
 
+/*
+ * function: rmgraph
+ * deallocates memory used by a graph.
+ *
+ * g: graph to be deallocated.
+ */
 void rmgraph(Graph_t *g)
 {
     for (int i = 0; i < g->verts; i++) {
@@ -89,6 +96,12 @@ void rmgraph(Graph_t *g)
     free(g);
 }
 
+/*
+ * function: printgraph
+ * prints the distances between vertices in Graph_t *g in a grid format.
+ *
+ * g: Graph to be printed.
+ */
 void printgraph(const Graph_t *g)
 {
     for (int i = 0; i < g->verts; i++) {
@@ -99,6 +112,12 @@ void printgraph(const Graph_t *g)
     }
 }
 
+/*
+ * function: mkgraph
+ * returns a dynamic graph.
+ *
+ * vertices: number of vertices to create.
+ */
 Graph_t *mkgraph(unsigned int vertices)
 {
     Graph_t *g = malloc(sizeof(Graph_t));
@@ -120,6 +139,13 @@ bool isconn(const Graph_t *g)
     return g->edges >= (g->verts * 2);
 }
 
+/*
+ * function: rmvert
+ * remove specifed vertex from graph
+ *
+ * g: graph to remove vertex from.
+ * ind: index in array to remove.
+ */
 void rmvert(Graph_t *g, int ind)
 {
     static int v_dels = 0;
@@ -137,13 +163,19 @@ void rmvert(Graph_t *g, int ind)
         g->mat[i][j] = dist(g->nod_list[i]->zergblk, g->nod_list[j]->zergblk);
     }
 
-    if (v_dels > (g->max_rems) / 2.0) { //Not going to remove more than half of the graph
+    if (v_dels > (g->max_rems) / 2.0) { /* Not going to remove more than half of the graph */
         fprintf(stderr, "Removed more than half of zerg units\n");
         rmgraph(g);
         exit(1);
     }
 }
 
+/*
+ * function: fixgraph
+ * remove unconnected vertices from graph.
+ *
+ * g: graph to remove unconnected vertices from.
+ */
 void fixgraph(Graph_t *g)
 {
     /* Neighbor count for each vertex */
@@ -160,6 +192,12 @@ void fixgraph(Graph_t *g)
     }
 }
 
+/*
+ * function: initgraph
+ * fill a graph with values from a BST
+ * g: graph to be filled.
+ * root: BST pointer to get edges from.
+ */
 void initgraph(Graph_t *g, Node *root)
 {
     for (int i = 0; i < g->verts; i++)
@@ -167,6 +205,7 @@ void initgraph(Graph_t *g, Node *root)
             g->mat[i][j] = 0;
 
     _arr_frm_tr(root, g->nod_list);
+    /* Fill 2d matrix with edge values */
     for (size_t i = 0; i < nodecount(root); i++)
     for (size_t j = 0; j < nodecount(root); j++) {
         g->mat[i][j] = dist(g->nod_list[i]->zergblk, g->nod_list[j]->zergblk);
@@ -175,9 +214,3 @@ void initgraph(Graph_t *g, Node *root)
     }
     return;
 }
-
-/*
-1. neighbor count
-2. reachability test via sets
-
-*/
