@@ -16,7 +16,7 @@ typedef struct node {
 #define UPDATE_NOT -1
 
 /*********FUNCTIONS*********/
-ZergBlock_t *mkblk(void); //TODO: look into macro-ing or inlining this
+ZergBlock_t *mkblk(void);
 Node *mknode(void);
 size_t nodecount(const Node *root);
 void printnode(const Node *n);
@@ -27,6 +27,5 @@ void listprint(Node *head);
 void ordprint(Node *root);
 void nadd(Node *root, ZergBlock_t *zb);
 int updtree(Node *root, ZergBlock_t *zb);
-//TODO: create nodec(); returns number of nodes in tree
 
 #endif

@@ -108,7 +108,7 @@ int main(int argc, char **argv)
                     fseek(fp, (NTOH3(zh.zh_len)) - ZERG_SIZE, SEEK_CUR);
                     break;
                 case 0x13 :
-                    z_gps_parse(fp, &zh, zb); //TODO: get GPS into zb here; memleak HERE
+                    z_gps_parse(fp, &zh, zb);
                     nadd(root, zb);
                     break;
                 default :
@@ -142,7 +142,7 @@ int main(int argc, char **argv)
         }
 
         printgraph(graph);
-        rmgraph(graph); //TODO: FREE() GRAPH
+        rmgraph(graph);
     }
 
     ordprint(root);

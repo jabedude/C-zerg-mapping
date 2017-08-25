@@ -115,6 +115,7 @@ Graph_t *mkgraph(unsigned int vertices)
 
 bool isconn(const Graph_t *g)
 {
+    /* Edge count */
     return g->edges >= (g->verts * 2);
 }
 
@@ -175,7 +176,6 @@ void initgraph(Graph_t *g, Node *root)
                                                    ntohs(g->nod_list[j]->zergblk->z_id));
         g->mat[i][j] = dist(g->nod_list[i]->zergblk, g->nod_list[j]->zergblk);
 
-        //TODO: determine adjacency here. http://www.geeksforgeeks.org/construct-ancestor-matrix-from-a-given-binary-tree/
         if ((g->mat[i][j] < MAX_DIST) && (g->mat[i][j] > MIN_DIST))
             ++(g->edges);
     }
