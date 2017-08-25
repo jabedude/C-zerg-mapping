@@ -23,6 +23,7 @@ void printnode(const Node *n);
 void rmtree(Node *root);
 void rmlist(Node *head);
 Node *trtol(Node *root);
+void printhealth(const Node *root, double hp);
 void listprint(Node *head);
 void ordprint(Node *root);
 void nadd(Node *root, ZergBlock_t *zb);

@@ -39,6 +39,12 @@ static double bin32(uint32_t num)
     return u_f.flt;
 }
 
+static int _ntoh3(uint8_t* x)
+{
+    int y =((int) x[0] << 16) | ((int) (x[1]) << 8) | ((int) (x[2]));
+    return y;
+}
+
 ZergBlock_t *mkblk(void)
 {
     ZergBlock_t *zb = malloc(sizeof(ZergBlock_t));
@@ -108,6 +114,16 @@ Node *trtol(Node *root)
 
 void nadd(Node *root, ZergBlock_t *zb)
 {
+#define MAX_ALT 7 * 0.0011364
+    /* Check for valid lat/long values */
+    double longitude = bin64(zb->z_long);
+    double latitude = bin64(zb->z_lat);
+    if ((abs(longitude) > 180) || (abs(latitude) > 90) || (abs(bin32(zb->z_alt)) > MAX_ALT)) {
+        fprintf(stderr, "Bad GPS value!\n");
+        free(zb);
+        return;
+    }
+
     if (root->zergblk) { //Non-empty tree
         Node *n = root;
         Node *m = root;
@@ -181,6 +197,22 @@ void ordprint(Node *root)
         ordprint(root->right);
     }
     return;
+}
+
+void printhealth(const Node *root, double hp)
+{
+    if (root) {
+        printhealth(root->left, hp);
+
+        if (!root->zergblk)
+            return;
+        double z_per = (double) _ntoh3(root->zergblk->z_hp) / _ntoh3(root->zergblk->z_maxhp);
+        z_per *= 100;
+        if (z_per < hp)
+            printf("Zerg: %d\tHP: %f\n", ntohs(root->zergblk->z_id), z_per);
+
+        printhealth(root->right, hp);
+    }
 }
 
 void rmtree(Node *root)

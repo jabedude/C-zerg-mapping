@@ -2,6 +2,7 @@
 
 #include "tree.h"
 #include "graph.h"
+#include "zerg.h"
 
 static uint64_t ntoh64(uint64_t val)
 {
@@ -171,11 +172,7 @@ void initgraph(Graph_t *g, Node *root)
     _arr_frm_tr(root, g->nod_list);
     for (size_t i = 0; i < nodecount(root); i++)
     for (size_t j = 0; j < nodecount(root); j++) {
-        printf("UNIT %d is %f far from UNIT %d\n", ntohs(g->nod_list[i]->zergblk->z_id),
-                                                   dist(g->nod_list[i]->zergblk, g->nod_list[j]->zergblk),
-                                                   ntohs(g->nod_list[j]->zergblk->z_id));
         g->mat[i][j] = dist(g->nod_list[i]->zergblk, g->nod_list[j]->zergblk);
-
         if ((g->mat[i][j] < MAX_DIST) && (g->mat[i][j] > MIN_DIST))
             ++(g->edges);
     }

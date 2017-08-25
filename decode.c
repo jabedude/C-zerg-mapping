@@ -25,14 +25,14 @@ int main(int argc, char **argv)
     ZergHeader_t zh;
 
     int opt = 0;
-    int h_val = 10;
+    double h_val = 10;
 
     /* get command line args */
     while ((opt = getopt(argc, argv, ":h:")) != -1) {
         switch (opt) {
             case 'h' :
-                h_val = atoi(optarg);
-                if (!h_val) {
+                h_val = atof(optarg);
+                if (h_val < 1.0) {
                     fprintf(stderr, "Invalid health percentage.\n");
                     return -1;
                 }
@@ -125,12 +125,11 @@ int main(int argc, char **argv)
     }
 
     node_c = nodecount(root);
-    printf("Node count is %u\n", node_c);
-    if (node_c > 1) { // http://www.geeksforgeeks.org/construct-ancestor-matrix-from-a-given-binary-tree/
+    if (node_c > 1) {
         Graph_t *graph = mkgraph(node_c);
         initgraph(graph, root);
 
-        printgraph(graph);
+        //printgraph(graph);
         printf("GRAPH HAS %d EDGES.\n", graph->edges);
 
         if (isconn(graph)) {
@@ -141,11 +140,13 @@ int main(int argc, char **argv)
             fixgraph(graph);
         }
 
-        printgraph(graph);
+        //printgraph(graph);
         rmgraph(graph);
     }
 
-    ordprint(root);
+    printf("Low Health Zerg Units (Below %.0f%%):\n", h_val);
+    printhealth(root, h_val);
+    //ordprint(root);
     rmtree(root);
     return 0;
 }
