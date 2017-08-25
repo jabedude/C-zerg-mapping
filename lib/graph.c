@@ -154,7 +154,7 @@ void fixgraph(Graph_t *g)
                 ++n_coun;
         }
         if (n_coun < 2) { //vertex has too few neighbors. bye bye!
-            printf("DEBUG: REMOVING ZERG %d at IND %d\n", ntohs(g->nod_list[i]->zergblk->z_id), i);
+            printf("REMOVING ZERG %d at IND %d\n", ntohs(g->nod_list[i]->zergblk->z_id), i);
             rmvert(g, i);
         }
     }
