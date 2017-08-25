@@ -45,6 +45,12 @@ static int _ntoh3(uint8_t* x)
     return y;
 }
 
+/*
+ * function: mkblk
+ * allocates memory for a zerg info block.
+ *
+ * return: pointer to allocated space for a zero'd out ZergBlock_t.
+ */
 ZergBlock_t *mkblk(void)
 {
     ZergBlock_t *zb = malloc(sizeof(ZergBlock_t));
@@ -52,6 +58,14 @@ ZergBlock_t *mkblk(void)
     return zb;
 }
 
+/*
+ * function: nodecount
+ * return the number of nodes in a BST
+ *
+ * root: pointer to root of BST
+ *
+ * return: size_t number of nodes in the BST
+ */
 size_t nodecount(const Node *root)
 {
     if (root == NULL)
@@ -61,6 +75,10 @@ size_t nodecount(const Node *root)
     }
 }
 
+/*
+ * function: mknode
+ * returns a dynamic node for BST.
+ */
 Node *mknode(void)
 {
     Node *n      = malloc(sizeof(Node));
@@ -111,6 +129,14 @@ Node *trtol(Node *root)
     return root;
 }
 
+/*
+ * function: nadd
+ * adds nodes to BST. If node has a zerg id matching a node in tree,
+ * node is updated with new values (coordinates, HP, etc.)
+ *
+ * root: root of BST we are adding to.
+ * zb: zerg info block to try to add to BST.
+ */
 void nadd(Node *root, ZergBlock_t *zb)
 {
 #define MAX_ALT 7 * 0.0011364
