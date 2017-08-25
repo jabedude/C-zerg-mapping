@@ -2,6 +2,9 @@
 #define ZERG_HEADER
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
 #include "pcap.h"
 
 /* Definitions */

@@ -1,8 +1,4 @@
-#include <math.h>
-
-#include "tree.h"
 #include "graph.h"
-#include "zerg.h"
 
 static uint64_t ntoh64(uint64_t val)
 {

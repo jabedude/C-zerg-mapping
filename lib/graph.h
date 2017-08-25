@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <math.h>
+
+#include "tree.h"
 #include "zerg.h"
 
 // GRAPH[i][j] = 1 if i and j are adjacent

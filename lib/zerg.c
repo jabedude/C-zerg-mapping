@@ -1,8 +1,4 @@
-#include <stdlib.h>
-#include <math.h>
-
 #include "zerg.h"
-#include "pcap.h"
 
 void z_status_parse(FILE *fp, ZergHeader_t *zh, ZergBlock_t *zb)
 {
