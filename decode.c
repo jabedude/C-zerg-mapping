@@ -85,10 +85,14 @@ int main(int argc, char **argv)
                 goto cleanup;
             }
 
-            fseek(fp, 8, SEEK_CUR);
+            /* Read in UDP header and check the dest port */
+            UdpHeader_t udp;
+            fread(&udp, sizeof(UdpHeader_t), 1, fp);
+            if (ntohs(udp.uh_dport) != 3751)
+                goto cleanup;
 
-            (void) fread(&zh, sizeof(zh), 1, fp);
             /* Test the Zerg Version */
+            (void) fread(&zh, sizeof(zh), 1, fp);
             if ((zh.zh_vt >> 4) != 1) {
                 fprintf(stderr, "Usupported Psychic Capture version\n");
                 goto cleanup;
