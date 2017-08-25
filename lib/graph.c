@@ -186,6 +186,7 @@ void fixgraph(Graph_t *g)
             rmvert(g, i);
         }
     }
+    puts("ALL ZERG IN POSITION");
 }
 
 /*

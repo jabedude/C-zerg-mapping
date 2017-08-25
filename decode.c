@@ -9,8 +9,6 @@
 #include "lib/tree.h"
 #include "lib/graph.h"
 
-//TODO: TESTCASE7??
-
 int main(int argc, char **argv)
 {
     /* Arguments check */
@@ -135,18 +133,10 @@ int main(int argc, char **argv)
     if (node_c > 1) {
         Graph_t *graph = mkgraph(node_c);
         initgraph(graph, root);
-
-        printf("GRAPH HAS %d EDGES.\n", graph->edges);
-
-        if (isconn(graph)) {
-            puts("ALL ZERG IN POSITION");
-            fixgraph(graph);
-        } else {
-            puts("GRAPH IS NOT CONNECTED");
-            fixgraph(graph);
-        }
-
+        fixgraph(graph);
         rmgraph(graph);
+    } else {
+        fprintf(stderr, "Not enough nodes to create graph.\n");
     }
 
     printf("Low Health Zerg Units (Below %.0f%%):\n", h_val);
