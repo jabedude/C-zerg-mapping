@@ -1,0 +1,72 @@
+Name:
+        Josh Abraham
+Date:
+        24 August 2017
+Current Module:
+        Data Structures & Algorithms II
+Project Name:
+        Zerg Mapper
+Project Goals:
+
+        The project aims to create a program capable of determining the Zerg connectivity of units from one or more psychic captures, then determinig what units to remove in order to make all units fully connected. Units farther that 15 meters or closer than 1.5 yards are not able to communicate with each other.
+
+Considerations:
+
+        - The program must compile and run on the UMBC Virtual Machine.
+        - The program must support IPv6 packets
+        - The zerg only communicate via UDP:3751
+        - A fully connected zerg network means all zerg non-adjacent units have at least 2 disjoint routes to each other.
+        - The zergmap program must have a '-h' option that takes an integer which indicates the health percentage below which
+        zerg units must be displayed.
+
+Initial Design:
+
+        My program is comprised of the following files:
+                graph.c/.h: contains functions and data structures related to the Graph ADT used in the project.
+                pcap.h: contains structures for reading psychic captures.
+                tree.c/.h: contains the implementation of the Binary Search Tree used by the program.
+                zerg.c/.h: contains the functions and structures related to reading Zerg header data.
+                zergmap.c: contains zergmap main().
+        I spilt the program into seperate files and functions for readabilty.
+
+Data Flow:
+
+        - Checks number of command line arguments.
+        - Gets command line arguments (filenames + optional '-h' flag)
+        - Opens files one by one and begins processing:
+                Reads PCAP file header, then subsequent headers, testing values and handling invalid values.
+                Creates BST from unique zerg units (identified by souce id).
+        - After all PCAP files have been read in, creates a Graph from the BST:
+                Initialize all edges to 0, then create an array from the BST.
+                Calculate edges and fill the matrix with the values.
+                        The edge calculation uses Haversine's Formula.
+                The interfering vetices are removed in fixgraph() and removed and the interfering units are printed to the screen.
+                The graph is finally deallocated via rmgraph().
+        - Zerg units below the health threshold (default 10%) are printed via printhealth().
+        - The BST is deallocated and the program returns.
+
+Communication Protocol:
+
+        N/A
+
+Potential Pitfalls:
+
+        - Error handling can be problematic (i.e. badly formatted input)
+        - Graphs where vertices have at least two edges but not two disjointed paths to all units.
+
+Test Plan:
+
+  User Test:
+
+        - Run program with no files
+        - Run program with one file
+        - Run program with file that has bad values
+
+  Test Cases:
+
+        - Use Test PCAPs from UMBC.
+        - Pass non-existent file
+
+Conclusion:
+
+        Overall the project is a success. The Graph and BST work, there are no memory leaks, and edge calculation is correct. If I had more time, I would like to implement a path-finding algorithm to solve edge cases such as that identifed in my second pitfall. I would also like to work on a feature to add Zerg units to the network to create a fully connected network.
