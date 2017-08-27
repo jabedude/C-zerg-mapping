@@ -8,7 +8,7 @@ Project Name:
         Zerg Mapper
 Project Goals:
 
-        The project aims to create a program capable of determining the Zerg connectivity of units from one or more psychic captures, then determinig what units to remove in order to make all units fully connected. Units farther that 15 meters or closer than 1.5 yards are not able to communicate with each other.
+        The project aims to create a program capable of determining the Zerg connectivity of units from one or more psychic captures, then determining what units to remove in order to make all units fully connected. Units farther that 15 meters or closer than 1.5 yards are not able to communicate with each other.
 
 Considerations:
 
@@ -27,7 +27,7 @@ Initial Design:
                 tree.c/.h: contains the implementation of the Binary Search Tree used by the program.
                 zerg.c/.h: contains the functions and structures related to reading Zerg header data.
                 zergmap.c: contains zergmap main().
-        I spilt the program into seperate files and functions for readabilty.
+        I split the program into separate files and functions for readability.
 
 Data Flow:
 
@@ -35,12 +35,12 @@ Data Flow:
         - Gets command line arguments (filenames + optional '-h' flag)
         - Opens files one by one and begins processing:
                 Reads PCAP file header, then subsequent headers, testing values and handling invalid values.
-                Creates BST from unique zerg units (identified by souce id).
+                Creates BST from unique zerg units (identified by source id).
         - After all PCAP files have been read in, creates a Graph from the BST:
                 Initialize all edges to 0, then create an array from the BST.
                 Calculate edges and fill the matrix with the values.
                         The edge calculation uses Haversine's Formula.
-                The interfering vetices are removed in fixgraph() and removed and the interfering units are printed to the screen.
+                The interfering vertices are removed in fixgraph() and removed and the interfering units are printed to the screen.
                 The graph is finally deallocated via rmgraph().
         - Zerg units below the health threshold (default 10%) are printed via printhealth().
         - The BST is deallocated and the program returns.
@@ -69,4 +69,4 @@ Test Plan:
 
 Conclusion:
 
-        Overall the project is a success. The Graph and BST work, there are no memory leaks, and edge calculation is correct. If I had more time, I would like to implement a path-finding algorithm to solve edge cases such as that identifed in my second pitfall. I would also like to work on a feature to add Zerg units to the network to create a fully connected network.
+        Overall the project is a success. The Graph and BST work, there are no memory leaks, and edge calculation is correct. If I had more time, I would like to implement a path-finding algorithm to solve edge cases such as that identified in my second pitfall. I would also like to work on a feature to add Zerg units to the network to create a fully connected network.
